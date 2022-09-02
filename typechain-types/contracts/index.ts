@@ -3,4 +3,5 @@
 /* eslint-disable */
 import type * as erc20Sol from "./ERC20.sol";
 export type { erc20Sol };
-export type { Token } from "./Token";
+export type { ERC20Mock } from "./ERC20Mock";
+export type { Token } from "../Token";

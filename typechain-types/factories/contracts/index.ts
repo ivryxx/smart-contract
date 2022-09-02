@@ -2,4 +2,5 @@
 /* tslint:disable */
 /* eslint-disable */
 export * as erc20Sol from "./ERC20.sol";
+export { ERC20Mock__factory } from "./ERC20Mock__factory";
 export { Token__factory } from "./Token__factory";
