@@ -25,13 +25,13 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IERC20__factory>;
     getContractFactory(
-      name: "GLDToken",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.GLDToken__factory>;
-    getContractFactory(
       name: "ERC20Mock",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.ERC20Mock__factory>;
+    getContractFactory(
+      name: "TestToken",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.TestToken__factory>;
     getContractFactory(
       name: "Token",
       signerOrOptions?: ethers.Signer | FactoryOptions
@@ -53,15 +53,15 @@ declare module "hardhat/types/runtime" {
       signer?: ethers.Signer
     ): Promise<Contracts.IERC20>;
     getContractAt(
-      name: "GLDToken",
-      address: string,
-      signer?: ethers.Signer
-    ): Promise<Contracts.GLDToken>;
-    getContractAt(
       name: "ERC20Mock",
       address: string,
       signer?: ethers.Signer
     ): Promise<Contracts.ERC20Mock>;
+    getContractAt(
+      name: "TestToken",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.TestToken>;
     getContractAt(
       name: "Token",
       address: string,

@@ -12,9 +12,9 @@ export type { IERC20Metadata } from "./@openzeppelin/contracts/token/ERC20/exten
 export { IERC20Metadata__factory } from "./factories/@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata__factory";
 export type { IERC20 } from "./@openzeppelin/contracts/token/ERC20/IERC20";
 export { IERC20__factory } from "./factories/@openzeppelin/contracts/token/ERC20/IERC20__factory";
-export type { GLDToken } from "./contracts/ERC20.sol/GLDToken";
-export { GLDToken__factory } from "./factories/contracts/ERC20.sol/GLDToken__factory";
 export type { ERC20Mock } from "./contracts/ERC20Mock";
 export { ERC20Mock__factory } from "./factories/contracts/ERC20Mock__factory";
+export type { TestToken } from "./contracts/TestToken";
+export { TestToken__factory } from "./factories/contracts/TestToken__factory";
 export type { Token } from "./contracts/Token";
 export { Token__factory } from "./factories/contracts/Token__factory";
