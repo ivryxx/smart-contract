@@ -37,7 +37,7 @@ describe('Token contract', () => {
   // 총 발행량 totalSupply
   describe('totalSupply', () => {
     it('total supply should not be more than the token minted', async function () {
-      await erc20.mint(owner.address, parseEther('10.0'));
+      await erc20.mint(owner.address, 1);
       const ownerBalance = await erc20.balanceOf(owner.address);
       expect(await erc20.totalSupply()).to.equal(ownerBalance);
     });
@@ -48,18 +48,18 @@ describe('Token contract', () => {
     it('balance of owner address should same with the amount of token minted', async function () {
       await erc20.mint(owner.address, parseEther('10.0'));
       const balanceofOwner = await erc20.balanceOf(owner.address);
-      expect(balanceofOwner).to.lessThan(11)
+      expect(balanceofOwner).to.equal(10.0)
     });
   });
 
   // 송금 transfer
   describe('transfer', () => {
     it('Transfers should fail if the balance of sender is insufficient', async function () {
-      await erc20.mint(owner.address, parseEther('10.0'));
+      await erc20.mint(addr1.address, parseEther('10.0'));
       
-      const balanceofOwner = await erc20.balanceOf(owner.address);
+      const balanceofAddr1 = await erc20.balanceOf(addr1.address);
       await expect(erc20.connect(addr1).transfer(owner.address, parseEther('10'))).to.be.revertedWith('Not enough tokens');
-      expect(await erc20.balanceOf(owner.address)).to.equal(balanceofOwner)
+      expect(await erc20.balanceOf(addr1.address)).to.equal(balanceofAddr1)
 
     });
   });
@@ -82,18 +82,18 @@ describe('Token contract', () => {
       await erc20.mint(owner.address, parseEther('10.0'));
       const transaction = await erc20.transfer(owner.address, parseEther('8.0'));
       const totalsupply = await erc20.balanceOf(owner.address)
-
-      
+      // await expect(transaction).
     })
   })
 
     // 유저간 송금 transferFrom
     describe('transferFrom', () => {
-      it('Should assign the account balance of another account with addres', async function () {
-        await erc20.mint(owner.address, parseEther('10.0'));
-        const transferFrom = await erc20.transferFrom(addr1.address, addr2.address, 10);
+      it('Should assign the account balance of another account with address', async function () {
+        await erc20.mint(addr1.address, parseEther('10.0'));
+        const transferFrom = await expect(erc20.connect(addr1).transferFrom(addr1.address, addr2.address, 10)
+        ).to.revertedWith(''); 
         const balanceofOwner = await erc20.balanceOf(owner.address);
-      expect(await erc20.balanceOf(addr1.address)).to.equal(11)
+      expect(await erc20.balanceOf(addr1.address)).to.equal(20)
       });
     });
 
