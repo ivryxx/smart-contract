@@ -69,7 +69,7 @@ describe('Token contract', () => {
     });
   });
 
-  //transferFrom
+  // transferFrom
   describe('transferFrom', () => {
     it('revert test', async () => {
       const mintTx = await erc721.mint(addr1.address, 1);

@@ -7,9 +7,12 @@ import { expect } from 'chai';
 import {  ERC20Mock } from '../typechain-types';
 // import { TotalSupply } from './class'
 import { parseEther } from 'ethers/lib/utils';
+import { Address } from 'cluster';
+
+const mintAmount = 5
+const tokenAmount = 3
 
 describe('Token contract', () => {
-
   let erc20: ERC20Mock;
   let owner: SignerWithAddress;
   let addr1: SignerWithAddress;
@@ -46,45 +49,54 @@ describe('Token contract', () => {
   // 잔액 balanceOf
   describe('balanceOf', () => {
     it('balance of owner address should same with the amount of token minted', async function () {
-      await erc20.mint(owner.address, parseEther('10.0'));
+      await erc20.mint(owner.address, 1);
       const balanceofOwner = await erc20.balanceOf(owner.address);
-      expect(balanceofOwner).to.equal(10.0)
+      expect(balanceofOwner).to.equal(1)
     });
   });
 
-  // 송금 transfer
+  // transfer
   describe('transfer', () => {
+    it('should fail when transfer to the zero address', async function () {
+      const mintTx = await erc20.mint(addr1.address, 3);
+      await mintTx.wait();
+
+      expect(erc20.connect(addr1).transfer(ethers.constants.AddressZero, 1))
+        .to.be.revertedWith('ERC20: transfer to the zero address');
+    });
+
     it('Transfers should fail if the balance of sender is insufficient', async function () {
-      await erc20.mint(addr1.address, parseEther('10.0'));
-      
-      const balanceofAddr1 = await erc20.balanceOf(addr1.address);
-      await expect(erc20.connect(addr1).transfer(owner.address, parseEther('10'))).to.be.revertedWith('Not enough tokens');
-      expect(await erc20.balanceOf(addr1.address)).to.equal(balanceofAddr1)
+      const tokenAmount = 3
+      const mintTx = await erc20.mint(addr1.address, tokenAmount);
+      await mintTx.wait();
 
+      await expect(erc20.connect(addr1).transfer(addr2.address, tokenAmount))
+        .to.be.revertedWith('ERC20: transfer amount exceeds balance');
     });
   });
 
-  //allowance
-  describe('allowance', () => {
-    it('Allowance should fail if sender does not have enough tokens', async function () {
-      await erc20.mint(owner.address, parseEther('10.0'));
-      const transaction = await erc20.transfer(owner.address, parseEther('12.0'));
-      // const balanceofOwner = await erc20.balanceOf(owner.address); 
-      await expect(transaction).to.be.revertedWith('Not enough tokens');
-
-    });
-  });
-  
-
-    //approve
+  // approve
   describe('approve', () => {
-    it('Approve should fail if the total supply of token is different with transaction', async function () {
-      await erc20.mint(owner.address, parseEther('10.0'));
-      const transaction = await erc20.transfer(owner.address, parseEther('8.0'));
-      const totalsupply = await erc20.balanceOf(owner.address)
-      // await expect(transaction).
+    it.only('should fail when approve to the zero address', async function () {
+      const mintTx = await erc20.mint(addr1.address, mintAmount);
+      await mintTx.wait();
+
+      await erc20.connect(addr1).approve(addr2.address, tokenAmount);
     })
   })
+
+  // allowance
+  describe('allowance', () => {
+    it('function allowance should return value of tokens allowed to spender', async function () {
+      const mintTx = await erc20.mint(addr1.address, mintAmount);
+      await mintTx.wait();
+
+      await erc20.connect(addr1).approve(addr2.address, tokenAmount)
+
+      expect(await erc20.connect(addr1).allowance(addr1.address, addr2.address))
+      .to.equal(tokenAmount)
+    });
+  });
 
     // 유저간 송금 transferFrom
     describe('transferFrom', () => {
