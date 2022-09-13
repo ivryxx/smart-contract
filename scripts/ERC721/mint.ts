@@ -19,19 +19,19 @@ const privateKey2 = env.get('PRIVATE_KEY_BAOBAB_2').required().asString();
   // const signer2 = new ethers.Wallet(privateKey2, provider);
   const signerContract = await ethers.getContractAt('TestToken721', testTokenContractAddr);
 
-  const transaction2 = await signerContract.mint(walletAddress1, 100);
+  const transaction2 = await signerContract.mint(walletAddress1, 11);
   await transaction2.wait();
 
   const balanceOfWallet1 = await signerContract.balanceOf(walletAddress1);
   console.log(balanceOfWallet1);
 
-  const transaction3 = await signerContract.transferFrom(walletAddress1, walletAddress2, 80);
+  const transaction3 = await signerContract.transferFrom(walletAddress1, walletAddress2, 11);
   await transaction3.wait();
 
   const balanceOfWallet = await signerContract.balanceOf(walletAddress1);
-  console.log(balanceOfWallet);
+  // console.log(balanceOfWallet);
 
   const balanceOfWallet2 = await signerContract.balanceOf(walletAddress2);
-  console.log(balanceOfWallet2)
+  // console.log(balanceOfWallet2)
 
 })();

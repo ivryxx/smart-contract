@@ -39,7 +39,7 @@
       ]
     },
     "/Users/yoonha/Documents/GitHub/smart-contracts/node_modules/@openzeppelin/contracts/token/ERC20/ERC20.sol": {
-      "lastModificationDate": 1662016095680,
+      "lastModificationDate": 1663064864085,
       "contentHash": "af7bd64e1cfefbf6cb07f2adc1a25392",
       "sourceName": "@openzeppelin/contracts/token/ERC20/ERC20.sol",
       "solcConfig": {
@@ -931,8 +931,8 @@
       ]
     },
     "/Users/yoonha/Documents/GitHub/smart-contracts/contracts/ERC721Mock.sol": {
-      "lastModificationDate": 1662541606028,
-      "contentHash": "aa7b3b9e548c10b57b5b4e59d285a4a5",
+      "lastModificationDate": 1663060084448,
+      "contentHash": "ea73632c02340ce85a4902f347861e19",
       "sourceName": "contracts/ERC721Mock.sol",
       "solcConfig": {
         "version": "0.8.13",
@@ -958,7 +958,7 @@
         }
       },
       "imports": [
-        "@openzeppelin/contracts/token/ERC721/presets/ERC721PresetMinterPauserAutoId.sol"
+        "@openzeppelin/contracts/token/ERC721/ERC721.sol"
       ],
       "versionPragmas": [
         "^0.8.0"

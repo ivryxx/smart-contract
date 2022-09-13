@@ -9,6 +9,8 @@ describe('Token contract', () => {
   let erc721: ERC721Mock;
   let [owner, addr1, addr2, addr3, addr4]: SignerWithAddress[] = [];
 
+  const mintId = 1;
+
   beforeEach(async function deploy() {
     [owner, addr1, addr2, addr3, addr4] = await ethers.getSigners();
     const Token = await ethers.getContractFactory('ERC721Mock')
@@ -29,22 +31,18 @@ describe('Token contract', () => {
       expect(ownerBalance).to.eq(1)
     });
 
-  
     it('The same tokenID minting should fail', async function () {
       const mintTx = await erc721.mint(addr1.address, 6);
       await mintTx.wait();
-  
 
       await expect(erc721.mint(addr1.address, 6))
         .to.be.revertedWith('ERC721: token already minted');
     });
-
-
   });
 
   // balanceOf
   describe('balanceOf', () => {
-    it('balance of owner address should same with the amount of token minted', async function () {
+    it('balance of owner address should same with the amount of token minted', async () => {
 
       await erc721.mint(addr1.address, 1);
       await erc721.mint(addr1.address, 2);
@@ -55,13 +53,17 @@ describe('Token contract', () => {
   
       expect(balance).to.equal(5);
     });
+
+    it('owner should not be the zero address', async () => {
+      await expect(erc721.balanceOf(ethers.constants.AddressZero))
+        .to.be.revertedWith('ERC721: address zero is not a valid owner');
+    });
   });
 
   // ownerOf
   describe('ownerOf', () => {
-    it('owner of token should same with address of deployer', async function () {
+    it('owner of token should same with address of deployer', async () => {
       await erc721.mint(addr1.address, 10);
-      
       
       const minter = await erc721.ownerOf(10);
       
@@ -79,7 +81,7 @@ describe('Token contract', () => {
         .to.be.revertedWith('ERC721: caller is not token owner nor approved');
     });
 
-    it('transferFrom', async function () {
+    it('transferFrom', async () =>  {
       await erc721.mint(addr1.address, 1);
       await erc721.connect(addr1).transferFrom(addr1.address, addr2.address, 1);
       
@@ -89,7 +91,7 @@ describe('Token contract', () => {
 
   // approve
   describe('approve', () => {
-    it('token owner should not same with address owner whom get approved', async function () {
+    it('token owner should not same with address owner whom get approved', async () =>  {
       const mintTx = await erc721.mint(addr1.address, 1);
       await mintTx.wait();
 
@@ -97,7 +99,7 @@ describe('Token contract', () => {
         .to.be.revertedWith('ERC721: approval to current owner')
     });
 
-    it('whom did not get approved for token should fail to be the approve caller', async function () {
+    it('whom did not get approved for token should fail to be the approve caller', async () => {
       const mintTx = await erc721.mint(addr1.address, 1);
       await mintTx.wait();
 
@@ -105,7 +107,7 @@ describe('Token contract', () => {
         .to.be.revertedWith('ERC721: approve caller is not token owner nor approved for all')
     });
 
-    it('token owner and whom get approved by owner both can be the approve caller of the token', async function () {
+    it('token owner and whom get approved by owner both can be the approve caller of the token', async () => {
       const mintTx = await erc721.mint(addr1.address, 1);
       await mintTx.wait();
 
@@ -113,14 +115,14 @@ describe('Token contract', () => {
       await expect(erc721.connect(addr3).approve(addr4.address, 1)).to.be.revertedWith('ERC721: approve caller is not token owner nor approved for all')
     });
 
-    it('approval should success when token owner set approve call', async function () {
+    it('approval should success when token owner set approve call', async () => {
       const mintTx = await erc721.mint(addr1.address, 3);
       await mintTx.wait();
 
       expect(await erc721.connect(addr1).approve(addr2.address, 3));
     });
     
-    it('approval should success when whom approved by token owner set approve call', async function () {
+    it('approval should success when whom approved by token owner set approve call', async () =>  {
       const mintTx = await erc721.mint(addr1.address, 3);
       await mintTx.wait();
 
@@ -132,7 +134,7 @@ describe('Token contract', () => {
     
   // setApproveForAll
   describe('setApproveForAll', () => {
-    it('token owner should not be the operator', async function () {
+    it('token owner should not be the operator', async () => {
       const mintTx = await erc721.mint(addr1.address, 1);
       await mintTx.wait();
 
@@ -140,7 +142,7 @@ describe('Token contract', () => {
         .to.be.revertedWith('ERC721: approve to caller')
     });
 
-    it('setApproveForAll', async function () {
+    it('setApproveForAll', async () => {
       const mintTx = await erc721.mint(addr1.address, 1);
       await mintTx.wait();
 
@@ -154,7 +156,7 @@ describe('Token contract', () => {
 
   // isApprovedForAll
     describe('isApprovedForAll', () => {
-      it('function isApprovedForAll should return true', async function () {
+      it('function isApprovedForAll should return true', async () => {
         const mintTx = await erc721.mint(addr1.address, 1);
         await mintTx.wait();
 
@@ -167,7 +169,7 @@ describe('Token contract', () => {
 
     // getApproved
     describe('getApproved', () => {
-      it('function getApproved should return approved address', async function () {
+      it('function getApproved should return approved address', async () => {
         const tokenId = 3;
         const mintTx = await erc721.mint(addr1.address, tokenId);
         await mintTx.wait();
