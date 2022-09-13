@@ -99,23 +99,46 @@ describe('Token contract', () => {
     });
   });
 
-    // transferFrom
-    describe('transferFrom', () => {
-      it('function transfer should return true', async function () {
-        const mintTx = await erc20.mint(addr1.address, 5);
-        await mintTx.wait();
+    // // transferFrom
+    // describe('transferFrom', () => {
+    //   it('function transfer should return true', async function () {
+    //     const mintTx = await erc20.mint(addr1.address, 5);
+    //     await mintTx.wait();
 
-        // await erc20.connect(addr1).allowance(addr2.address, 4);
+    //     // await erc20.connect(addr1).allowance(addr2.address, 4);
 
-        // await erc20.connect(addr1).transfer(addr2.address, 1);
-        expect(await erc20.transferFrom(addr1.address, addr2.address, 4))
-          .to.equal(true);
-      });
+    //     // await erc20.connect(addr1).transfer(addr2.address, 1);
+    //     expect(await erc20.transferFrom(addr1.address, addr2.address, 4))
+    //       .to.equal(true);
+    //   });
 
-      it('recipient cannot be the zero address', async function () {
-        const mintTx = await erc20.mint(addr1.address, 5);
-        await mintTx.wait();
-      })
+    //   it('recipient cannot be the zero address', async function () {
+    //     const mintTx = await erc20.mint(addr1.address, 5);
+    //     await mintTx.wait();
+    //   })
+    // });
+  
+  // transferFrom
+  describe('transferFrom', () => {
+    it('function transferFrom should emit when approved token amount is less than sender have', async function () {
+      const mintTx = await erc20.mint(addr1.address, 5);
+      await mintTx.wait();
+
+      await erc20.connect(addr1).approve(addr2.address, 4);
+      
+      await erc20.connect(addr2).transferFrom(addr1.address, addr2.address, 4);
+      expect(await erc20.balanceOf(addr2.address)).to.eq(4)
+
     });
+
+    it('recipient cannot be the zero address', async function () {
+      const mintTx = await erc20.mint(addr1.address, 5);
+      await mintTx.wait();
+
+      expect(erc20.connect(addr1).transferFrom(addr1.address, ethers.constants.AddressZero, 1))
+      .to.be.revertedWith('ERC20: transfer to the zero address');
+    })
+  });
+    
 
   });

@@ -52,5 +52,7 @@ export type { ERC721TT } from "./contracts/ERC721TT";
 export { ERC721TT__factory } from "./factories/contracts/ERC721TT__factory";
 export type { TestToken } from "./contracts/TestToken";
 export { TestToken__factory } from "./factories/contracts/TestToken__factory";
+export type { TestToken721 } from "./contracts/TestToken721";
+export { TestToken721__factory } from "./factories/contracts/TestToken721__factory";
 export type { Token } from "./contracts/Token";
 export { Token__factory } from "./factories/contracts/Token__factory";

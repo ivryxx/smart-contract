@@ -1,7 +1,7 @@
 
 import { ethers } from 'hardhat';
 
-import { ERC20 } from '../typechain-types';
+import { ERC20 } from '../../typechain-types';
 
 let testToken: ERC20;
 
