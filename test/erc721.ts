@@ -112,7 +112,8 @@ describe('Token contract', () => {
       await mintTx.wait();
 
       erc721.connect(addr1).approve(addr2.address, 1)
-      await expect(erc721.connect(addr3).approve(addr4.address, 1)).to.be.revertedWith('ERC721: approve caller is not token owner nor approved for all')
+      await expect(erc721.connect(addr3).approve(addr4.address, 1))
+        .to.be.revertedWith('ERC721: approve caller is not token owner nor approved for all')
     });
 
     it('approval should success when token owner set approve call', async () => {
