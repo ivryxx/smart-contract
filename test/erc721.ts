@@ -161,7 +161,7 @@ describe('Token contract', () => {
         await erc721.connect(addr1).setApprovalForAll(addr2.address, true);
 
         expect(await erc721.isApprovedForAll(addr1.address, addr2.address))
-        .to.equal(true)
+          .to.equal(true);
       });
     });
 
