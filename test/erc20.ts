@@ -2,9 +2,8 @@ import '@typechain/hardhat';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { ethers } from 'hardhat';
 import { expect } from 'chai';
-import {  ERC20Mock } from '../typechain-types';
+import { ERC20Mock } from '../typechain-types';
 import { parseEther } from 'ethers/lib/utils';
-import { transcode } from 'buffer';
 
 describe('Token contract', () => {
   const mintAmount = 5;
@@ -163,4 +162,52 @@ describe('Token contract', () => {
         .to.emit(erc20, 'Transfer').withArgs(addr1.address, addr2.address, 2);
     });
   });
+
+  // burnable - burn
+  describe('burnable', () => {
+    it('should fail when burn from the zero address', async () => {
+      await expect(erc20.burn(ethers.constants.AddressZero, tokenAmount))
+        .to.be.revertedWith('ERC20: burn from the zero address');
+    });
+
+    it('burn amount cannot exceeds balance', async () => {
+      const mintTx = await erc20.mint(addr1.address, mintAmount);
+      await mintTx.wait();
+
+      await expect(erc20.connect(addr1).burn(addr1.address, 8))
+        .to.be.revertedWith('ERC20: burn amount exceeds balance');
+    });
+
+    it('function burn should emit transfer event to the zero address', async () => {
+      const mintTx = await erc20.mint(addr1.address, mintAmount);
+      await mintTx.wait();
+
+      await expect(erc20.burn(addr1.address, tokenAmount))
+        .to.emit(erc20, 'Transfer').withArgs(addr1.address, ethers.constants.AddressZero, tokenAmount);
+    });
+  });
+
+  // burnable - burnfrom
+  describe('burnFrom', () => {
+    it('burn amount cannot exceed allowance amount', async () => {
+      const mintTx = await erc20.mint(addr1.address, mintAmount);
+      await mintTx.wait();
+
+      await erc20.connect(addr1).approve(addr2.address, 3);
+
+      await expect(erc20.connect(addr2).burnFrom(addr2.address, 7))
+        .to.be.revertedWith('ERC20: insufficient allowance')
+    });
+  });
+
+  // pausable - beforeTokenTransfer
+  describe('', async () => {
+    const mintTx = await erc20.mint(addr1.address, mintAmount);
+    await mintTx.wait();
+
+    await erc20.connect(addr1).transfer(addr2.address, 3)
+  });
+
+  // ownable
+
 });

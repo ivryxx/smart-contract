@@ -3,7 +3,7 @@ import { expect } from 'chai';
 import { ethers } from 'hardhat';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { ERC721Mock } from '../typechain-types';
-import { parseEther } from 'ethers/lib/utils';
+import { ERC721Burnable } from '../typechain-types'
 
 describe('Token contract', () => {
   let erc721: ERC721Mock;
@@ -17,8 +17,7 @@ describe('Token contract', () => {
     const ERC721 = await Token.deploy('TestToken', 'TT');
     
     erc721 = await ERC721.deployed();
-    
-  })
+  });
 
   // mint 
   describe('mint', () => {
