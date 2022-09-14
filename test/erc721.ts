@@ -6,10 +6,9 @@ import { ERC721Mock } from '../typechain-types';
 import { ERC721Burnable } from '../typechain-types'
 
 describe('Token contract', () => {
+  const tokenId = 3;
   let erc721: ERC721Mock;
   let [owner, addr1, addr2, addr3, addr4]: SignerWithAddress[] = [];
-
-  const mintId = 1;
 
   beforeEach(async function deploy() {
     [owner, addr1, addr2, addr3, addr4] = await ethers.getSigners();
@@ -170,7 +169,6 @@ describe('Token contract', () => {
     // getApproved
     describe('getApproved', () => {
       it('function getApproved should return approved address', async () => {
-        const tokenId = 3;
         const mintTx = await erc721.mint(addr1.address, tokenId);
         await mintTx.wait();
 
@@ -180,4 +178,53 @@ describe('Token contract', () => {
       });
     });
   });
+
+  // tests for erc721 extensions (Enumerable, Burnable, Pauseable, Ownable)
+  // burnable
+  describe('burnable', () => {
+    it('the caller for burn function must own tokenId or be an approved operator', async () => {
+      const mintTx = await erc721.mint(addr1.address, tokenId);
+      await mintTx.wait();
+
+      await erc721.connect(addr1).approve(addr3.address, tokenId);
+
+      await expect(erc721.connect(addr2).burn(tokenId))
+        .to.be.revertedWith('ERC721: caller is not token owner nor approved');
+    });
+
+    it('approved operator should success to burn', async () => {
+      const mintTx = await erc721.mint(addr1.address, tokenId);
+      await mintTx.wait();
+
+      await erc721.connect(addr1).approve(addr3.address, tokenId);
+
+      await erc721.connect(addr1).transferFrom(addr1.address, addr3.address, tokenId);
+
+      await erc721.connect(addr3).burn(tokenId);
+
+      const balanceOfaddr3 = await erc721.balanceOf(addr3.address);
+
+      expect(balanceOfaddr3).to.equal(0);
+    });
+
+    // it('should fail when burn from the zero address', async () => {
+    //   const mintTx = await erc721.mint(addr1.address, tokenId);
+    //   await mintTx.wait();
+      
+    //   await expect(erc721.connect(ethers.constants.AddressZero).burn(tokenId))
+    //     .to.be.revertedWith('ERC721: burn from the zero address');
+    // });
+  });
+
+  describe('pausable', () => {
+    it.only('token transfer should fail when transfer paused', async () => {
+      const mintTx = await erc721.mint(addr1.address, tokenId);
+      await mintTx.wait();
+
+      await erc721.connect(addr1).transferFrom(addr1.address, addr2.address, tokenId);
+      expect(await erc721.paused()).eq(false);
+
+    });
+  });
+
 });

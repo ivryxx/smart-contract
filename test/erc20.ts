@@ -22,6 +22,8 @@ describe('Token contract', () => {
     erc20 = await ERC20.deployed();
   });
 
+  // tests for erc20 functions 
+  // mint 
   describe('mint', () => {
     it('minting should be successful when deployer mint', async () => {
       await erc20.mint(owner.address, parseEther('5.0'));
@@ -163,7 +165,8 @@ describe('Token contract', () => {
     });
   });
 
-  // burnable - burn
+  // tests for erc20 extensions (burnable, pausable, ownable)
+  // burnable 
   describe('burnable', () => {
     it('should fail when burn from the zero address', async () => {
       await expect(erc20.burn(ethers.constants.AddressZero, tokenAmount))
@@ -185,10 +188,7 @@ describe('Token contract', () => {
       await expect(erc20.burn(addr1.address, tokenAmount))
         .to.emit(erc20, 'Transfer').withArgs(addr1.address, ethers.constants.AddressZero, tokenAmount);
     });
-  });
 
-  // burnable - burnfrom
-  describe('burnFrom', () => {
     it('burn amount cannot exceed allowance amount', async () => {
       const mintTx = await erc20.mint(addr1.address, mintAmount);
       await mintTx.wait();
@@ -200,14 +200,22 @@ describe('Token contract', () => {
     });
   });
 
-  // pausable - beforeTokenTransfer
-  describe('', async () => {
-    const mintTx = await erc20.mint(addr1.address, mintAmount);
-    await mintTx.wait();
+  // pausable 
+  describe('pausable', () => {
+    it('token transfer should fail when transfer paused', async () => {
+      const mintTx = await erc20.mint(addr1.address, mintAmount);
+      await mintTx.wait();
 
-    await erc20.connect(addr1).transfer(addr2.address, 3)
+      await erc20.connect(addr1).transfer(addr2.address, 4);
+      expect(erc20.paused()).to.be.revertedWith('ERC20Pausable: token transfer while paused');
+    });
   });
 
   // ownable
-
+  describe('ownable', () => {
+    it('token owner should same with message sender', async () => {
+      await expect(erc20.connect(addr1).mint(owner.address, mintAmount))
+        .to.be.revertedWith('Ownable: caller is not the owner');
+    });
+  });
 });
