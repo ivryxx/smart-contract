@@ -27,6 +27,7 @@ contract ERC721Mock is ERC721, ERC721Burnable, ERC721Pausable, ERC721Enumerable,
   function supportsInterface(bytes4 interfaceId) public view virtual override(ERC721, ERC721Enumerable) returns (bool) {
     return super.supportsInterface(interfaceId);
   }
+  
    function pause() public onlyOwner {
     _pause();
   }

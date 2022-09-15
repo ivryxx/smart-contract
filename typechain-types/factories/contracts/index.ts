@@ -7,3 +7,4 @@ export { ERC721TT__factory } from "./ERC721TT__factory";
 export { TestToken__factory } from "./TestToken__factory";
 export { TestToken721__factory } from "./TestToken721__factory";
 export { Token__factory } from "./Token__factory";
+export { VerifySignature__factory } from "./VerifySignature__factory";

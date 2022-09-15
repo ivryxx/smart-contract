@@ -13,10 +13,9 @@ const privateKey2 = env.get('PRIVATE_KEY_BAOBAB_2').required().asString();
 
 
 (async () => {
-  
   const provider = new ethers.providers.JsonRpcProvider('https://public-node-api.klaytnapi.com/v1/baobab');
-  // const signer1 = new ethers.Wallet(privateKey1, provider);
-  // const signer2 = new ethers.Wallet(privateKey2, provider);
+  const signer1 = new ethers.Wallet(privateKey1, provider);
+  const signer2 = new ethers.Wallet(privateKey2, provider);
   const signerContract = await ethers.getContractAt('TestToken721', testTokenContractAddr);
 
   const transaction2 = await signerContract.mint(walletAddress1, 11);
@@ -29,9 +28,9 @@ const privateKey2 = env.get('PRIVATE_KEY_BAOBAB_2').required().asString();
   await transaction3.wait();
 
   const balanceOfWallet = await signerContract.balanceOf(walletAddress1);
-  // console.log(balanceOfWallet);
+  console.log(balanceOfWallet);
 
   const balanceOfWallet2 = await signerContract.balanceOf(walletAddress2);
-  // console.log(balanceOfWallet2)
+  console.log(balanceOfWallet2)
 
 })();

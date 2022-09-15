@@ -52,3 +52,5 @@ export type { TestToken721 } from "./contracts/TestToken721";
 export { TestToken721__factory } from "./factories/contracts/TestToken721__factory";
 export type { Token } from "./contracts/Token";
 export { Token__factory } from "./factories/contracts/Token__factory";
+export type { VerifySignature } from "./contracts/VerifySignature";
+export { VerifySignature__factory } from "./factories/contracts/VerifySignature__factory";

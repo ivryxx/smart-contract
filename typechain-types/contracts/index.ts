@@ -7,3 +7,4 @@ export type { ERC721TT } from "./ERC721TT";
 export type { TestToken } from "./TestToken";
 export type { TestToken721 } from "./TestToken721";
 export type { Token } from "./Token";
+export type { VerifySignature } from "./VerifySignature";
