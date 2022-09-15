@@ -28,11 +28,19 @@ contract ERC20Mock is ERC20Pausable, Ownable {
       _burn(account, amount);
   }
 
+  function pause() public onlyOwner {
+    _pause();
+  }
 
+  function unpause() public onlyOwner {
+    _unpause();
+  }
 
- 
-
-  // function _beforeTokenTransfer(address from, address to, uint256 amount) internal virtual override {
-  //   super._beforeTokenTransfer(from, to, amount);
-  // }
+  function requirePaused() public virtual {
+    _requirePaused(); 
+  }
+  
+  function _beforeTokenTransfer(address from, address to, uint256 amount) internal virtual override {
+    super._beforeTokenTransfer(from, to, amount);
+  }
 }

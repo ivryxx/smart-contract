@@ -8,12 +8,10 @@ import { parseEther } from 'ethers/lib/utils';
 describe('Token contract', () => {
   const mintAmount = 5;
   const tokenAmount = 3;
+  const transferAmount = 2
   let erc20: ERC20Mock;
-  let owner: SignerWithAddress;
-  let addr1: SignerWithAddress;
-  let addr2: SignerWithAddress;
-  let addr3: SignerWithAddress;
-
+  let [owner, addr1, addr2, addr3]: SignerWithAddress[] = [];
+  
   beforeEach(async function deployTokenFixture() {
     [owner, addr1, addr2, addr3] = await ethers.getSigners();
     const Token = await ethers.getContractFactory('ERC20Mock');
@@ -88,8 +86,13 @@ describe('Token contract', () => {
     });
 
     it('function transfer should emit transfer event', async () => {
-      
-    })
+      const tokenAmount = 3
+      const mintTx = await erc20.mint(addr1.address, tokenAmount);
+      await mintTx.wait();
+
+      await expect(erc20.connect(addr1).transfer(addr2.address, transferAmount))
+        .to.emit(erc20, 'Transfer').withArgs(addr1.address, addr2.address, transferAmount);
+    });
   });
 
   // approve
@@ -206,16 +209,47 @@ describe('Token contract', () => {
       const mintTx = await erc20.mint(addr1.address, mintAmount);
       await mintTx.wait();
 
-      await erc20.connect(addr1).transfer(addr2.address, 4);
-      expect(erc20.paused()).to.be.revertedWith('ERC20Pausable: token transfer while paused');
+      await erc20.pause();
+
+      await expect(erc20.connect(addr1).transfer(addr2.address, 4))
+        .to.be.revertedWith('ERC20Pausable: token transfer while paused');
+    });
+    
+    it('function transfer should emit transfer event when unpaused', async () => {
+      const mintTx = await erc20.mint(addr1.address, mintAmount);
+      await mintTx.wait();
+
+      await erc20.pause();
+      await erc20.unpause();
+
+      await expect(erc20.connect(addr1).transfer(addr2.address, transferAmount))
+        .to.emit(erc20, 'Transfer').withArgs(addr1.address, addr2.address, transferAmount);
     });
   });
+
 
   // ownable
   describe('ownable', () => {
     it('token owner should same with message sender', async () => {
       await expect(erc20.connect(addr1).mint(owner.address, mintAmount))
         .to.be.revertedWith('Ownable: caller is not the owner');
+    });
+
+    it('function owner should return current owner address', async () => {
+      expect(await erc20.owner()).to.eq(owner.address)
+    });
+
+    it('transfered owner should not be the zero address', async () => {
+      const mintTx = await erc20.mint(addr1.address, mintAmount);
+      await mintTx.wait();
+
+      await expect(erc20.connect(owner).transferOwnership(ethers.constants.AddressZero))
+        .to.be.revertedWith('Ownable: new owner is the zero address')
+    });
+
+    it('only owner can be the caller of function pause', async () => {
+      await expect(erc20.connect(addr1).pause())
+        .to.be.revertedWith('Ownable: caller is not the owner')
     });
   });
 });

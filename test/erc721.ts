@@ -3,7 +3,6 @@ import { expect } from 'chai';
 import { ethers } from 'hardhat';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { ERC721Mock } from '../typechain-types';
-import { ERC721Burnable } from '../typechain-types'
 
 describe('Token contract', () => {
   const tokenId = 3;
@@ -206,25 +205,79 @@ describe('Token contract', () => {
 
       expect(balanceOfaddr3).to.equal(0);
     });
-
-    // it('should fail when burn from the zero address', async () => {
-    //   const mintTx = await erc721.mint(addr1.address, tokenId);
-    //   await mintTx.wait();
-      
-    //   await expect(erc721.connect(ethers.constants.AddressZero).burn(tokenId))
-    //     .to.be.revertedWith('ERC721: burn from the zero address');
-    // });
   });
 
+  // pausable
   describe('pausable', () => {
-    it.only('token transfer should fail when transfer paused', async () => {
+    it('token transfer should fail when transfer paused', async () => {
       const mintTx = await erc721.mint(addr1.address, tokenId);
       await mintTx.wait();
 
-      await erc721.connect(addr1).transferFrom(addr1.address, addr2.address, tokenId);
-      expect(await erc721.paused()).eq(false);
+      await erc721.pause();
 
+      await expect(erc721.connect(addr1).transferFrom(addr1.address, addr2.address, tokenId))
+        .to.be.revertedWith('ERC721Pausable: token transfer while paused');
+    });
+
+    it('function transferFrom should emit transfer event when unpaused', async () => {
+      const mintTx = await erc721.mint(addr1.address, tokenId);
+      await mintTx.wait();
+
+      await erc721.pause();
+      await erc721.unpause();
+
+      await expect(erc721.connect(addr1).transferFrom(addr1.address, addr2.address, tokenId))
+        .to.emit(erc721, 'Transfer').withArgs(addr1.address, addr2.address, tokenId);
+    });
+
+  });
+
+  // ownable
+  describe('ownable', () => {
+    it('token owner should same with message sender', async () => {
+      await expect(erc721.connect(addr1).mint(owner.address, tokenId))
+        .to.be.revertedWith('Ownable: caller is not the owner');
+    });
+
+    it('function owner should return current owner address', async () => {
+      expect(await erc721.owner()).to.eq(owner.address);
+    });
+
+    it('transfered owner should not be the zero address', async () => {
+      const mintTx = await erc721.mint(addr1.address, tokenId);
+      await mintTx.wait();
+
+      await expect(erc721.connect(owner).transferOwnership(ethers.constants.AddressZero))
+        .to.be.revertedWith('Ownable: new owner is the zero address')
+    });
+
+    it('only owner can be the caller of function pause', async () => {
+      await expect(erc721.connect(addr1).pause())
+        .to.be.revertedWith('Ownable: caller is not the owner');
     });
   });
 
+  // enumerable
+  describe('enumerable', () => {
+    it('function tokenOfOwnerByIndex should fail when index is bigger than balance of owner', async () => {
+      await erc721.mint(addr1.address, 1);
+      await erc721.mint(addr1.address, 2);
+      await erc721.mint(addr1.address, 3);
+      await erc721.mint(addr1.address, 4);
+      await erc721.mint(addr1.address, 5);
+
+      await expect(erc721.tokenOfOwnerByIndex(addr1.address, 8))
+        .to.be.revertedWith('ERC721Enumerable: owner index out of bounds');
+    });
+
+    it('function tokenByIndex should fail when index is bigger than totalSupply', async () => {
+      await erc721.mint(addr1.address, 1);
+      await erc721.mint(addr1.address, 2);
+      await erc721.mint(addr1.address, 3);
+      await erc721.mint(addr1.address, 4);
+      await erc721.mint(addr1.address, 5);
+
+      await expect(erc721.tokenByIndex(8)).to.be.revertedWith('ERC721Enumerable: global index out of bounds')
+    });
+  });
 });
