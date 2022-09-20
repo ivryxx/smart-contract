@@ -11,7 +11,7 @@ describe('Token contract', () => {
 
   beforeEach(async function deploy() {
     [owner, addr1, addr2, addr3, addr4] = await ethers.getSigners();
-    const Token = await ethers.getContractFactory('ERC721Mock')
+    const Token = await ethers.getContractFactory('ERC721Mock');
     const ERC721 = await Token.deploy('TestToken', 'TT');
     
     erc721 = await ERC721.deployed();
@@ -20,7 +20,7 @@ describe('Token contract', () => {
   // mint 
   describe('mint', () => {
     it('Minting should be successful when deployer mint', async () => {
-      const mintTx = await erc721.mint(addr1.address, 1)
+      const mintTx = await erc721.mint(addr1.address, 1);
       await mintTx.wait();
     
       const ownerBalance = await erc721.balanceOf(addr1.address);
