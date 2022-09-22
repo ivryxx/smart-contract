@@ -83,7 +83,7 @@ console.log(addAges)
 
 const ageFilter = objs.map((value) => {
   if (Number(value.age) >= 29 ) {
-    return String(Number(value))
+    return value
   }
 })
 console.log(ageFilter)
